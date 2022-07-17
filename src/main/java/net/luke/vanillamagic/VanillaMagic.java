@@ -2,6 +2,7 @@ package net.luke.vanillamagic;
 
 import net.fabricmc.api.ModInitializer;
 import net.luke.vanillamagic.item.ModItems;
+import net.luke.vanillamagic.util.ModLootTableModifiers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,5 +18,6 @@ public class VanillaMagic implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 
 		ModItems.registerModItems();
+		ModLootTableModifiers.modifyLootTables();
 	}
 }

@@ -5,17 +5,17 @@ import net.luke.vanillamagic.VanillaMagic;
 import net.luke.vanillamagic.item.custom.Spell;
 import net.luke.vanillamagic.item.custom.SpellSettings;
 import net.luke.vanillamagic.item.custom.SpellType;
+import net.luke.vanillamagic.item.custom.StaffItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterials;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 public class ModItems {
 
-    public static final Item WOODEN_STAFF = registerItem("wooden_staff", new Item(
-            new FabricItemSettings().group(ModItemGroup.VANILLA_MAGIC)
-    ));
+    public static final Item WOODEN_STAFF = registerItem("wooden_staff", new StaffItem(Rarity.COMMON).power(0));
 
     public static final Item RAIN_SPELL = registerItem("rain_spell", new Spell(
             new SpellSettings(SpellType.RAIN)

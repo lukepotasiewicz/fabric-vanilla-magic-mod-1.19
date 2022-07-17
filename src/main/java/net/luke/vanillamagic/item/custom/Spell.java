@@ -29,7 +29,7 @@ public class Spell extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient() && hand == Hand.MAIN_HAND) {
+        if (!world.isClient && hand == Hand.MAIN_HAND) {
             user.getItemCooldownManager().set(this, coolodwn);
             switch (this.type) {
                 case RAIN:
