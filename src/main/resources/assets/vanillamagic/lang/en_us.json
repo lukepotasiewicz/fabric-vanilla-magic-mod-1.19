@@ -1,5 +1,9 @@
 {
-  "item.vanillamagic.wooden_staff": "Wooden Staff",
+  "itemGroup.vanillamagic.vanillamagic": "Vanilla Magic",
 
-  "itemGroup.vanillamagic.vanillamagic": "Vanilla Magic"
+  "item.vanillamagic.wooden_staff": "Wooden Staff",
+  "item.vanillamagic.rain_spell": "Rain Spell",
+  "item.vanillamagic.sun_spell": "Sun Spell",
+  "item.vanillamagic.day_spell": "Day Spell",
+  "item.vanillamagic.night_spell": "Night Spell"
 }
