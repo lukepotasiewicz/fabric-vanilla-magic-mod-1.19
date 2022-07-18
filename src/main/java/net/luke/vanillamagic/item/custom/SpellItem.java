@@ -58,7 +58,6 @@ public class SpellItem extends Item {
         this.cooldownManager = user.getItemCooldownManager();
 
         ItemStack spell = user.getStackInHand(Hand.MAIN_HAND);
-        spell.setDamage(this.cost);
         return TypedActionResult.success(spell);
     }
 
@@ -82,7 +81,7 @@ public class SpellItem extends Item {
         int chargeTime = this.getMaxUseTime(stack) - remainingUseTicks;
         if (chargeTime <= 0) {
             if (!world.isClient) {
-                this.cooldownManager.set(this, coolodwn);
+                this.cooldownManager.set(this, this.cooldown);
                 switch (this.type) {
                     case RAIN -> {
                         world.getLevelProperties().setRaining(true);

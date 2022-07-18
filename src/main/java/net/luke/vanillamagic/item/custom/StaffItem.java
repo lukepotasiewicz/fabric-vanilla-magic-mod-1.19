@@ -35,11 +35,11 @@ public class StaffItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && hand == Hand.OFF_HAND) {
+        if (!world.isClient) {
             ItemStack stack = user.getStackInHand(Hand.OFF_HAND);
             ItemStack spell = user.getStackInHand(Hand.MAIN_HAND);
-//            stack.setDamage(stack.getDamage() - spell.);
-//            stack.damage(1, null, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            stack.damage(1, user, e -> e.sendEquipmentBreakStatus(EquipmentSlot.OFFHAND));
+            spell.damage(1, user, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
 
         return super.use(world, user, hand);
