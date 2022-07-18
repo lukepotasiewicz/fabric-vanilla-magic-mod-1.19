@@ -24,8 +24,8 @@ import java.util.List;
 public class StaffItem extends Item {
     private int power;
 
-    public StaffItem(Rarity rarity) {
-        super(new FabricItemSettings().group(ModItemGroup.VANILLA_MAGIC).maxCount(1).rarity(rarity));
+    public StaffItem(FabricItemSettings settings) {
+        super(settings);
     }
 
     public StaffItem power(int power) {
@@ -57,7 +57,7 @@ public class StaffItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(Text.literal("Used to cast spells.").formatted(Formatting.WHITE));
-        tooltip.add(Text.literal("+" + this.power + "Power").formatted(Formatting.YELLOW));
+        tooltip.add(Text.literal("+" + this.power + " Power").formatted(Formatting.YELLOW));
         super.appendTooltip(stack, world, tooltip, context);
     }
 }

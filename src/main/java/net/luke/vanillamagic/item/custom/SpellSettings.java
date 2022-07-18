@@ -11,6 +11,7 @@ public class SpellSettings {
     public SpellType type;
     public int cooldown;
     public int cost;
+    public int castTime;
     public Rarity rarity;
 
     public SpellSettings cooldown(int cooldown) {
@@ -20,6 +21,11 @@ public class SpellSettings {
 
     public SpellSettings cost(int cost) {
         this.cost = cost;
+        return this;
+    }
+
+    public SpellSettings castTime(int castTime) {
+        this.castTime = castTime;
         return this;
     }
 

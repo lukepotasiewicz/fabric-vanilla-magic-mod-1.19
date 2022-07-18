@@ -17,8 +17,6 @@ public class ModLootTableModifiers {
 
     public static void modifyLootTables() {
         LootTableEvents.MODIFY.register((resourceManager, lootManager, id, tableBuilder, source) -> {
-            // Let's only modify built-in loot tables and leave data pack loot tables untouched by checking the source.
-            // We also check that the loot table ID is equal to the ID we want.
             if (source.isBuiltin() && SHIPWRECK_TREASURE_ID.equals(id)) {
                 LootPool.Builder poolBuilder = LootPool.builder()
                     .with(ItemEntry.builder(ModItems.RAIN_SPELL));
