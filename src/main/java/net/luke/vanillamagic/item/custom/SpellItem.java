@@ -6,7 +6,6 @@ import net.luke.vanillamagic.item.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.sound.SoundCategory;
@@ -19,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class SpellItem extends Item {
+    public static final int field_30855 = 20;
     private int cooldown;
     private int cost;
     private int castTime;
@@ -36,77 +36,68 @@ public class SpellItem extends Item {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         user.sendMessage(Text.literal("Stopped using" + remainingUseTicks));
-        int chargeTime = this.getMaxUseTime(stack) - remainingUseTicks;
-        if (chargeTime <= 0) {
+    }
+
+    @Override
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        if (remainingUseTicks == 0) { // TODO: this may break on lagging servers
             if (!world.isClient) {
+
+                ItemStack staff = user.getStackInHand(Hand.OFF_HAND);
+                staff.damage(this.cost, user, e -> e.sendEquipmentBreakStatus(EquipmentSlot.OFFHAND));
+
                 this.currentUser.getItemCooldownManager().set(this, this.cooldown);
+
+                world.playSound(null, user.getX(), user.getY(), user.getZ(),
+                        SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
+                        SoundCategory.PLAYERS,
+                        3.0f, 1.0f / (world.getRandom().nextFloat() * 0.5f + 1.0f) + 0.2f);
                 switch (this.type) {
                     case RAIN -> {
                         world.getLevelProperties().setRaining(true);
-                        world.playSound(null, user.getX(), user.getY(), user.getZ(),
-                                SoundEvents.ITEM_CROSSBOW_LOADING_END,
-                                SoundCategory.PLAYERS,
-                                1.0f, 1.0f / (world.getRandom().nextFloat() * 0.5f + 1.0f) + 0.2f);
                     }
                     case SUN -> world.getLevelProperties().setRaining(false);
                     case DAY -> user.sendMessage(Text.literal("Set time to day"));
                     case NIGHT -> user.sendMessage(Text.literal("Set time to night"));
                 }
             }
-
         }
     }
-
-//    @Override
-//    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-//        if (!world.isClient) {
-//            user.sendMessage(Text.literal("Charging, remainingUseTicks: " + remainingUseTicks));
-//        }
-//    }
     @Override
     public int getMaxUseTime(ItemStack stack) {
         return this.castTime;
     }
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return UseAction.SPEAR;
+        return UseAction.BOW;
     }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-//        if (!world.isClient && hand == Hand.MAIN_HAND) {
-//            user.getItemCooldownManager().set(this, cooldown);
-//            switch (this.type) {
-//                case RAIN:
-//                    world.getLevelProperties().setRaining(true);
-//                    world.playSound(null, user.getX(), user.getY(), user.getZ(),
-//                            SoundEvents.ITEM_CROSSBOW_LOADING_END,
-//                            SoundCategory.PLAYERS,
-//                            1.0f, 1.0f / (world.getRandom().nextFloat() * 0.5f + 1.0f) + 0.2f);
-//                    break;
-//                case SUN:
-//                    world.getLevelProperties().setRaining(false);
-//                    break;
-//                case DAY:
-//                    user.sendMessage(Text.literal("Set time to day"));
-//                    break;
-//                case NIGHT:
-//                    user.sendMessage(Text.literal("Set time to night"));
-//                    break;
-//            }
-//        }
+        ItemStack item = user.getStackInHand(hand);
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             user.isHolding(ModItems.WOODEN_STAFF);
             user.sendMessage(Text.literal("Spell use"));
             this.currentUser = user;
-            ItemStack staff = user.getStackInHand(Hand.OFF_HAND);
-            staff.damage(this.cost, user, e -> e.sendEquipmentBreakStatus(EquipmentSlot.OFFHAND));
 
+            ItemStack staff = user.getStackInHand(Hand.OFF_HAND);
+            String itemName = staff.getItem().getTranslationKey();
+            user.sendMessage(Text.literal( "Item name: " + itemName));
+            user.sendMessage(Text.literal(staff.getMaxDamage() - staff.getDamage() + " :)"));
+//            user.isHolding(ModItems.WOODEN_STAFF);
+            if (itemName.equals("item.vanillamagic.wooden_staff") && staff.getMaxDamage() - staff.getDamage() >= this.cost) {
+                user.sendMessage(Text.literal( "in cast if statement"));
+                user.setCurrentHand(hand);
+                return TypedActionResult.success(item);
+            }
         }
-        ItemStack item = user.getStackInHand(hand);
         return TypedActionResult.fail(item);
     }
     @Override
     public boolean hasGlint(ItemStack stack) {
+        return true;
+    }
+    @Override
+    public boolean isUsedOnRelease(ItemStack stack) {
         return true;
     }
     @Override

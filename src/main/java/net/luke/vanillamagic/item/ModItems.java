@@ -2,10 +2,7 @@ package net.luke.vanillamagic.item;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.luke.vanillamagic.VanillaMagic;
-import net.luke.vanillamagic.item.custom.SpellItem;
-import net.luke.vanillamagic.item.custom.SpellSettings;
-import net.luke.vanillamagic.item.custom.SpellType;
-import net.luke.vanillamagic.item.custom.StaffItem;
+import net.luke.vanillamagic.item.custom.*;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
