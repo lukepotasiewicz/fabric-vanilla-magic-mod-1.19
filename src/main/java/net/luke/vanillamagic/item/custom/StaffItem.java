@@ -41,7 +41,6 @@ public class StaffItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient) {
-            user.sendMessage(Text.literal("Staff use"));
         }
 
         return super.use(world, user, hand);
@@ -53,7 +52,6 @@ public class StaffItem extends Item {
     }
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        user.sendMessage(Text.literal("stopped using"));
     }
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {

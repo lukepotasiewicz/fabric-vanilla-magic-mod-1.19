@@ -3,11 +3,14 @@ package net.luke.vanillamagic.item.custom;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.luke.vanillamagic.item.ModItemGroup;
 import net.luke.vanillamagic.item.ModItems;
+import net.luke.vanillamagic.particle.ModParticles;
+import net.luke.vanillamagic.util.ParticleUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -35,12 +38,39 @@ public class SpellItem extends Item {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        user.sendMessage(Text.literal("Stopped using" + remainingUseTicks));
+//        user.sendMessage(Text.literal("Stopped using" + remainingUseTicks));
     }
 
     @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        if (remainingUseTicks == 0) { // TODO: this may break on lagging servers
+        int castProgress = (int)(((float)(this.castTime - remainingUseTicks))/(float)(this.castTime) * 100f);
+        if (remainingUseTicks > 0) {
+            if (world.isClient) {
+                ParticleUtil particles = new ParticleUtil(world, user);
+                particles.spawnInRing(ModParticles.GLYPH_SMALL_PARTICLE, castProgress / 40 + 1,  1f, 0.5f, 0f, 0.01f);
+                particles.spawnInRing(ModParticles.GLYPH_PARTICLE, castProgress / 80 + 1, 1.2f, 1f, 0f, 0.01f);
+                particles.spawnInRing(ModParticles.GLYPH_SMALL_PARTICLE, castProgress / 40 + 1, 1f, 1.5f, 0f, 0.01f);
+                switch (this.type) {
+                    case RAIN -> {
+                        particles.spawnInRing(ParticleTypes.BUBBLE, 2, 1.2f, 0f, 0.4f, 0.08f);
+                        particles.spawnInRing(ParticleTypes.FALLING_DRIPSTONE_WATER, castProgress / 5, 1.2f, 0f, castProgress / 10f * 2.0f, 2f);
+                    }
+                    case SUN -> {
+                        particles.spawnInRing(ParticleTypes.FLAME, castProgress / 10, 1.2f, 0f, castProgress / 10f * 0.013f, 0.04f, castProgress / 10f * 0.01f);
+                        if (remainingUseTicks % 3 == 0) {
+                            particles.spawnInRing(ParticleTypes.LAVA, 1, 1.2f, 0f, 0.1f, 0.08f);
+                        }
+                    }
+                    case DAY -> {
+                        particles.spawnInRing(ParticleTypes.DRIPPING_LAVA, 2, 1.2f, 0f, 0.4f, 0.08f);
+                    }
+                    case NIGHT -> {
+                        particles.spawnInRing(ParticleTypes.END_ROD, 2, 1.2f, 0f, 0.4f, 0.08f);
+                    }
+                }
+            }
+        }
+        else if (remainingUseTicks == 0) { // TODO: this may break on lagging servers
             if (!world.isClient) {
 
                 ItemStack staff = user.getStackInHand(Hand.OFF_HAND);
@@ -52,6 +82,7 @@ public class SpellItem extends Item {
                         SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
                         SoundCategory.PLAYERS,
                         3.0f, 1.0f / (world.getRandom().nextFloat() * 0.5f + 1.0f) + 0.2f);
+
                 switch (this.type) {
                     case RAIN -> {
                         world.getLevelProperties().setRaining(true);
@@ -60,9 +91,33 @@ public class SpellItem extends Item {
                     case DAY -> user.sendMessage(Text.literal("Set time to day"));
                     case NIGHT -> user.sendMessage(Text.literal("Set time to night"));
                 }
+            } else {
+                ParticleUtil particles = new ParticleUtil(world, user);
+                particles.spawnInRing(ParticleTypes.ENCHANTED_HIT, 30, 1f, 0.5f, -0.2f, 3f);
+                particles.spawnInRing(ParticleTypes.ENCHANTED_HIT, 30, 1.2f, 1f, 0f, 3f);
+                particles.spawnInRing(ParticleTypes.ENCHANTED_HIT, 30, 1f, 1.5f, 0.4f, 3f);
+                switch (this.type) {
+                    case RAIN -> {
+                        particles.spawnInRing(ParticleTypes.RAIN, 10, 1.2f, 0f, 0.8f, 2f);
+                        particles.spawnInRing(ParticleTypes.RAIN, 10, 1.2f, 0.5f, 0.8f, 2f);
+                        particles.spawnInRing(ParticleTypes.RAIN, 10, 1.2f, 1f, 0.8f, 2f);
+                    }
+                    case SUN -> {
+                        particles.spawnInRing(ParticleTypes.FLAME, 100, 1.2f, 0f, 0.15f, 0.05f, -0.1f);
+                    }
+                    case DAY -> {
+                        particles.spawnInRing(ParticleTypes.DRIPPING_LAVA, 2, 1.2f, 0f, 0.4f, 0.08f);
+                    }
+                    case NIGHT -> {
+                        particles.spawnInRing(ParticleTypes.END_ROD, 2, 1.2f, 0f, 0.4f, 0.08f);
+                    }
+                }
             }
         }
     }
+
+
+
     @Override
     public int getMaxUseTime(ItemStack stack) {
         return this.castTime;
@@ -76,16 +131,12 @@ public class SpellItem extends Item {
         ItemStack item = user.getStackInHand(hand);
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             user.isHolding(ModItems.WOODEN_STAFF);
-            user.sendMessage(Text.literal("Spell use"));
             this.currentUser = user;
 
             ItemStack staff = user.getStackInHand(Hand.OFF_HAND);
             String itemName = staff.getItem().getTranslationKey();
-            user.sendMessage(Text.literal( "Item name: " + itemName));
-            user.sendMessage(Text.literal(staff.getMaxDamage() - staff.getDamage() + " :)"));
 //            user.isHolding(ModItems.WOODEN_STAFF);
             if (itemName.equals("item.vanillamagic.wooden_staff") && staff.getMaxDamage() - staff.getDamage() >= this.cost) {
-                user.sendMessage(Text.literal( "in cast if statement"));
                 user.setCurrentHand(hand);
                 return TypedActionResult.success(item);
             }

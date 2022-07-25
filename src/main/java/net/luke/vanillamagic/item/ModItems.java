@@ -20,9 +20,9 @@ public class ModItems {
 
     public static final Item RAIN_SPELL = registerItem("rain_spell", new SpellItem(
             new SpellSettings(SpellType.RAIN)
-                    .cooldown(80)
+                    .cooldown(10)
                     .cost(10)
-                    .castTime(32),
+                    .castTime(100),
             Rarity.UNCOMMON
 
     ));
@@ -30,21 +30,21 @@ public class ModItems {
             new SpellSettings(SpellType.SUN)
                     .cooldown(80)
                     .cost(10)
-                    .castTime(32),
+                    .castTime(100),
             Rarity.UNCOMMON
     ));
     public static final Item DAY_SPELL = registerItem("day_spell", new SpellItem(
             new SpellSettings(SpellType.DAY)
                     .cooldown(80)
                     .cost(10)
-                    .castTime(32),
+                    .castTime(60),
             Rarity.UNCOMMON
     ));
     public static final Item NIGHT_SPELL = registerItem("night_spell", new SpellItem(
             new SpellSettings(SpellType.NIGHT)
                     .cooldown(80)
                     .cost(10)
-                    .castTime(32),
+                    .castTime(60),
             Rarity.UNCOMMON
     ));
 
